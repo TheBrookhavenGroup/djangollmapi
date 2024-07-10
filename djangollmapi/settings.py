@@ -8,7 +8,7 @@ from django.core.management.utils import get_random_secret_key
 config_file = os.path.join(os.getcwd(), 'djangollmapi', 'djangollmapi.config')
 config_file = os.environ.get('DJANGO_LLM_API_CONFIG', config_file)
 
-assert(os.path.exists(config_file))
+assert os.path.exists(config_file)
 print(f"Config File: {config_file}")
 config = configparser.ConfigParser(interpolation=None)
 config.read(config_file)
