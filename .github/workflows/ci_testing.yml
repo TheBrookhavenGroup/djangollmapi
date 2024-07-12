@@ -37,7 +37,7 @@ jobs:
 
     - name: PEP8
       run:
-        python -m pip install pycodestyle
+        python -m pip install pycodestyle;
         pycodestyle --config=./setup.cfg .
 
     - name: psycopg2 prerequisites
