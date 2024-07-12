@@ -1,3 +1,5 @@
+emacs
+ufw
 python3-dev
 libpq-dev
 postgresql

@@ -7,7 +7,6 @@ Type=forking
 User=ubuntu
 Group=ubuntu
 EnvironmentFile=/etc/conf.d/celery
-#EnvironmentFile=/etc/profile.d/django_project.sh
 #Environment=SYSTEMD_LOG_LEVEL=debug
 WorkingDirectory=/home/ubuntu/djangollmapi/
 # -A djangollmapi worker -E -l DEBUG --concurrency=1 -Q serial

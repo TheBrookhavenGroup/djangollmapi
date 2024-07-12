@@ -5,7 +5,7 @@ import configparser
 from tbgutils import dt as mc_dt
 from django.core.management.utils import get_random_secret_key
 
-config_file = os.path.join(os.getcwd(), 'djangollmapi', 'djangollmapi.config')
+config_file = os.path.join(os.getenv('HOME'), '.djangollmapi')
 config_file = os.environ.get('DJANGO_LLM_API_CONFIG', config_file)
 
 assert os.path.exists(config_file)
