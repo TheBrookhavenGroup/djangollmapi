@@ -10,9 +10,9 @@ The Brookhaven Group, LLC<br>
 
 ## Objective
 
-Provide a RESTful API with an access control for an LLM service.  These 
-services typically require a large data set to be loaded into memory.  
-That data would be cached once for all subsequent API calls.
+This systems provides a RESTful API with an access control for an LLM service.  
+These services typically require a large objects loaded into memory.  
+That objects would be cached once for all subsequent API calls.
 
 Consider also that memory and GPU resources are expensive and may only 
 handle a single task at a time.  In this configuration we have a single 
@@ -61,10 +61,9 @@ print(response.content)
 
 ## Architecture
 
-The Django web framework is obviously at the heart of our system.  We chose 
-it because it is a complete framework, we did not have to look further 
-for components like the ORM, templating, security middleware, RESTful view 
-base classes, and so on.
+Django is leveraged for our system.  We chose it because it is a complete
+framework, we did not have to look further for components like the ORM, 
+templating, security middleware, RESTful view base classes, and so on.
 
 An example stack running on Ubuntu would include:
 
