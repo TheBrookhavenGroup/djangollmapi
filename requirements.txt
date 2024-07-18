@@ -1,11 +1,9 @@
 django
 psycopg2-binary
 tbgutils
-pycodestyle
 djangorestframework
 requests
 httpx
 celery
 gunicorn
 Redis
-# git+https://github.com/TheBrookhavenGroup/tbg_llm_example.git
