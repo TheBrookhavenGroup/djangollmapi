@@ -11,16 +11,15 @@ The Brookhaven Group, LLC<br>
 ## Objective
 
 This systems provides a RESTful API with an access control for an LLM service.  
-These services typically require a large objects loaded into memory.  
-That objects would be cached once for all subsequent API calls.
+These services typically require a large objects loaded into memory.  For 
+efficiency, such objects would be cached once for all subsequent API calls.
 
-Consider also that memory and GPU resources are expensive and may only 
-handle a single task at a time.  In this configuration we have a single 
-Linux server with two GPUs.  A separate LLM could be loaded and remain
-resident for each GPU.  This could easily be expanded to `n` models on `n` 
-GPUs.
+Memory and GPU resources are expensive and may only handle a single task at 
+a time.  In this configuration we have a single Linux server with two GPUs. 
+A separate LLM could be loaded and remain resident for each GPU.  This could 
+easily be expanded to `n` models on `n` GPUs.
 
-The API is secured with a key, optional usage parameters limiting the 
+The API is secured with a key, optional usage parameters limiting the
 number of API calls made, and an expiration date.
 
 ## Features
@@ -81,7 +80,7 @@ the first call and memoized for all subsequent calls.
 
 The Algorithm used by the API is defined in an external pip installable
 package.  It needs to have a class named `Algorithm` with a `run(input_text)`
-method. An instance of `Algorithm` would be memoized so its constructor 
+method. An instance of `Algorithm` will be memoized so its constructor 
 would load model data.  The `run(input_text)` method implements the 
 algorithm using one or more LLMs and maybe GPUs.
 
