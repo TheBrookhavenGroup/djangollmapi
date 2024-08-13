@@ -6,4 +6,5 @@ requests
 celery
 gunicorn
 Redis
+pycodestyle
 git+https://github.com/TheBrookhavenGroup/tbg_llm_example.git
