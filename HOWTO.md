@@ -11,6 +11,8 @@ Great Reference: [How to Setup Django](https://www.digitalocean.com/community/tu
 
 We'll use Nginx, Gunicorn, and Django.
 
+Python 3.9.5 with torch 2.0.1 worked for us.
+
 ## Notation: 
 
 Angle brackets indicate where you need to use an appropriate value.  i.e. 
@@ -120,12 +122,12 @@ To                         Action      From
 --                         ------      ----
 22/tcp                     ALLOW       Anywhere                  
 OpenSSH                    ALLOW       Anywhere                  
-Nginx Full                 ALLOW       Anywhere 
-https                      ALLOW       Anywhere                 
+Nginx Full                 ALLOW       Anywhere                  
+443/tcp                    ALLOW       Anywhere                  
 22/tcp (v6)                ALLOW       Anywhere (v6)             
 OpenSSH (v6)               ALLOW       Anywhere (v6)             
-Nginx Full (v6)            ALLOW       Anywhere (v6)
-https                      ALLOW       Anywhere (v6)        
+Nginx Full (v6)            ALLOW       Anywhere (v6)             
+443/tcp (v6)               ALLOW       Anywhere (v6)
 
 ```
 
@@ -393,25 +395,33 @@ celery tasks running the algorithm.
 
 The `/var/log/nginx/access.log` is where you can see server requests.
 
-## Pulling a New Algorithm Version
+## Algorithm Update Workflow
+
+Suggestion: write a bash script for these steps with the given algorithm 
+package name and put it in `~/update_algo.bash` and `chmod +x ~/update_algo.
+bash`.  Then from your localhost you can run `ssh ubuntu@<hostname> update_algo.bash`.
 
 ```bash
-cd ~/tbg_llm_example
-git pull
+#!/usr/bin/env bash
+source ~/.bash_profile
+source ~/.bashrc
+pyenv shell djangollmapi
 pip uninstall -y tbg_llm_example
-pip install .
+pip install git+ssh://git@github.com/TheBrookhavenGroup/tbg_llm_example.git
 sudo systemctl restart gunicorn.service
+sudo systemctl restart celery.service
 sudo systemctl restart celeryserial.service
 ```
 
-If you use a different package then clone that package into `~/` and replace 
-`tbg_llm_example` with the alternative package name in steps above.
-
-Suggestion: write a bash script for these steps with the given algorithm 
-package name and put it in `~/update_algo.bash`.  Then from your localhost 
-you can run `ssh ubuntu@<hostname> update_algo.bash`.
+If you use a different algorithm package package replace 
+`tbg_llm_example` with the alternative package repo url in steps above.
 
 REMEMBER: set the algorithm parameters in `~/.djangollmapi`.
 
+You can watch log output from the algorithm in the serial celery log:
+
+```bash
+ssh ubuntu@<hostname> tail -f /var/log/celery/serial.log
+```
 
 # Try it!
