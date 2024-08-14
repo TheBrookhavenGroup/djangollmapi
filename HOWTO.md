@@ -86,7 +86,7 @@ needed packages as shown in the session below.
   # apt update
   # apt upgrade
   # sudo su -
-  # xargs -a ~paperspace/djangollmapi/server_files/packages.txt sudo apt-get 
+  # xargs -a ~/djangollmapi/server_files/packages.txt sudo apt-get 
   install
   # exit
   ```
@@ -221,7 +221,7 @@ $ sudo su -
 # cp /home/ubuntu/djangollmapi/server_files/etc/conf.d/celery /etc/conf.d/
 # cp /home/ubuntu/djangollmapi/server_files/etc/tmpfiles.d/celery.conf /etc/tmpfiles.d/ 
 # mkdir /var/log/celery
-# chown paperspace:paperspace /var/log/celery
+# chown ubuntu:ubuntu /var/log/celery
 # systemctl enable celery
 # systemctl enable celeryserial
 # sudo systemctl daemon-reload
