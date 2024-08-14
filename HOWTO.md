@@ -11,6 +11,8 @@ Great Reference: [How to Setup Django](https://www.digitalocean.com/community/tu
 
 We'll use Nginx, Gunicorn, and Django.
 
+Python 3.9.5 with torch 2.0.1 worked for us.
+
 ## Notation: 
 
 Angle brackets indicate where you need to use an appropriate value.  i.e. 
@@ -30,10 +32,48 @@ Add this line to the end of /etc/sudoers. You'll have to temporarily change
 the permissions with chmod +w /etc/sudoers and then after editing change it 
 back with chmod -w /etc/sudoers.
 
-`django ALL=(ALL) NOPASSWD:ALL`
+`ubuntu ALL=(ALL) NOPASSWD:ALL`
 
 You may want to put your public ssh key in `/home/django/ssh/authorized_keys`
 so you can login without a password.
+
+In many of the config files the assumed Ubuntu user is "ubuntu".  That may 
+be different for your account.  For example Paperspace conifgures the default 
+user for their Ubuntu CPUs to be "paperspace", go figure.
+
+## Copy this repo using git clone
+
+```bash
+$ cd
+$ git clone https://github.com/TheBrookhavenGroup/djangollmapi.git
+```
+
+## Create config file
+
+Create a `~/.djangollmapi` file with the appropriate settings.  It could 
+look like this:
+
+```text
+[DJANGO]
+DEBUG=True
+PROJECT_NAME=Binoculars Live
+SECRET_KEY="django-insecure-dt@hl9)ewrj!wdwrmar$c%&yx(g-*yp*ke*kcpdf8+x&*or1^="
+ADMIN_URL=36126112845a9778035lecf20e06faa087bcb6d2
+DOMAIN=binoculars.live
+
+
+[POSTGRES]
+DB=djangollmapi
+USER=postgres
+PASS=postgres
+
+[LLM]
+MODEL_PACKAGE=binoculars_algo
+MODEL1=EleutherAI/pythia-410m
+MODEL2=EleutherAI/pythia-410m
+```
+
+You may want to set `DEBUG=False`.
 
 ## Basic Ubuntu Configuration
 
@@ -45,14 +85,13 @@ needed packages as shown in the session below.
   # sudo su -
   # apt update
   # apt upgrade
-  # apt install git
-  # exit
-  $ cd
-  $ git clone git@github.com:TheBrookhavenGroup/djangollmapi.git
   # sudo su -
-  # xargs -a ~/djangollmapi/server_files/packages.txt sudo apt-get install
+  # xargs -a ~paperspace/djangollmapi/server_files/packages.txt sudo apt-get 
+  install
   # exit
   ```
+
+Restart the server.
 
 ## UFW (Uncomplicated Firewall)
 
@@ -68,6 +107,7 @@ $ sudo su -
 # ufw allow OpenSSH
 # ufw enable
 # ufw allow "Nginx Full"
+# ufw allow https
 # ufw status
 # exit
 ```
@@ -83,9 +123,11 @@ To                         Action      From
 22/tcp                     ALLOW       Anywhere                  
 OpenSSH                    ALLOW       Anywhere                  
 Nginx Full                 ALLOW       Anywhere                  
+443/tcp                    ALLOW       Anywhere                  
 22/tcp (v6)                ALLOW       Anywhere (v6)             
 OpenSSH (v6)               ALLOW       Anywhere (v6)             
 Nginx Full (v6)            ALLOW       Anywhere (v6)             
+443/tcp (v6)               ALLOW       Anywhere (v6)
 
 ```
 
@@ -126,7 +168,8 @@ this server.
 
 It is ok to use "postgres" for the username and password.  It is presumed 
 that the server is behind a firewall with postgres ports blocked.  Only 
-users on this server should have access to postgres.
+users on this server should have access to postgres.  If that makes you 
+uncomfortable then change it to anything you like and update the `~/.djangollmapi` config file.
 
 ## Set up pyenv
 
@@ -140,6 +183,8 @@ environment for djangollcapi as follows:
   $ pyenv install 3.12.3
   $ pyenv shell 3.12.3
   $ pyenv virtualenv djangollmapi
+  $ pyenv global djangollmapi
+  $ pip install --upgrade pip
 ```
 
 ## Install Required Packages and Migrate Django Models
@@ -148,7 +193,7 @@ environment for djangollcapi as follows:
 $ cd
 $ pyenv shell djangollmapi
 $ cd ~/djangollmapi
-$ pip install -r requirements
+$ pip install -r requirements.txt
 $ python manage.py collectstatic --noinput
 $ python manage.py makemigrations
 $ python manage.py migrate
@@ -175,6 +220,8 @@ $ sudo su -
 # mkdir /etc/conf.d
 # cp /home/ubuntu/djangollmapi/server_files/etc/conf.d/celery /etc/conf.d/
 # cp /home/ubuntu/djangollmapi/server_files/etc/tmpfiles.d/celery.conf /etc/tmpfiles.d/ 
+# mkdir /var/log/celery
+# chown paperspace:paperspace /var/log/celery
 # systemctl enable celery
 # systemctl enable celeryserial
 # sudo systemctl daemon-reload
@@ -188,9 +235,12 @@ Note: you can use wildcards with systemctl like this `sudo systemctl restart 'ce
 $ sudo su -
 # cd /etc/systemd/system/
 # cp /home/ubuntu/djangollmapi/server_files/etc/systemd/system/gunicorn.service ./
+# cp /home/ubuntu/djangollmapi/server_files/gunicorn_conf.py ~/
+# mkdir /var/log/gunicorn
+# chown ubuntu /var/log/gunicorn
 # sudo systemctl daemon-reload
-# systemctl start gunicorn
 # systemctl enable gunicorn
+# systemctl start gunicorn
 # exit
 $ cd
 $ cd djangollmapi
@@ -241,6 +291,9 @@ $ sudo su
 # rm /etc/nginx/sites-enabled/default
 ```
 
+Don't forget to set the host domain name in the `server` `if` block in 
+`djangollmapi.nginx`. 
+
 ```shell
 # systemctl restart nginx
 # systemctl restart gunicorn.service 
@@ -272,7 +325,7 @@ Ref: `https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker`
 
 This uses databases that are frequently updated to block traffic from known bad actors.
 
-```commandline
+```bash
 $ sudo su -
 # wget https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/install-ngxblocker -O /usr/local/sbin/install-ngxblocker
 # cd /usr/local/sbin
@@ -292,12 +345,16 @@ Note: used `-e nginx` arg with `setup-ngxblocker` because that is the extension 
 
 Add this line to the crontab:
 
-`13 22 * * * root /usr/local/sbin/update-ngxblocker -e ms@quizitive.com`
+`13 22 * * * root /usr/local/sbin/update-ngxblocker -e <your email address>`
 
-Try tests suggested at the end of hte github home page.
+Try tests suggested at the end of the github home page.
+
+If you don't have email you can use this not as good approach:
+
+`13 22 * * * root /usr/local/sbin/update-ngxblocker -n`
 
 
-## Add a few houskeeping items to /etc/crontab
+## Add a few housekeeping items to /etc/crontab
 
 ### Crontab
 
@@ -329,5 +386,42 @@ $ mkdir /home/ubuntu/pg_dumps/
 Redis seems to dump automatically and frequently.  So, backing
 it up just means copying the dump file.  You can download the 
 `/var/lib/redis/dumps.rdb` as needed.
+
+
+## Log Files
+
+The `/var/log/celery/serial.log` is where you can see logging done by the 
+celery tasks running the algorithm.
+
+The `/var/log/nginx/access.log` is where you can see server requests.
+
+## Algorithm Update Workflow
+
+Suggestion: write a bash script for these steps with the given algorithm 
+package name and put it in `~/update_algo.bash` and `chmod +x ~/update_algo.
+bash`.  Then from your localhost you can run `ssh ubuntu@<hostname> update_algo.bash`.
+
+```bash
+#!/usr/bin/env bash
+source ~/.bash_profile
+source ~/.bashrc
+pyenv shell djangollmapi
+pip uninstall -y tbg_llm_example
+pip install git+ssh://git@github.com/TheBrookhavenGroup/tbg_llm_example.git
+sudo systemctl restart gunicorn.service
+sudo systemctl restart celery.service
+sudo systemctl restart celeryserial.service
+```
+
+If you use a different algorithm package package replace 
+`tbg_llm_example` with the alternative package repo url in steps above.
+
+REMEMBER: set the algorithm parameters in `~/.djangollmapi`.
+
+You can watch log output from the algorithm in the serial celery log:
+
+```bash
+ssh ubuntu@<hostname> tail -f /var/log/celery/serial.log
+```
 
 # Try it!
