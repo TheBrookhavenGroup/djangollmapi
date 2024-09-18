@@ -33,7 +33,7 @@ class APIRequest(models.Model):
     text = models.CharField(max_length=10000)
     nchars = models.IntegerField()
     nwords = models.IntegerField()
-    output = models.IntegerField()
+    output = models.CharField(max_length=10000, blank=True)
 
     def __str__(self):
         return f"{self.key} - {self.dt} - {self.nchars} - {self.nwords}"
