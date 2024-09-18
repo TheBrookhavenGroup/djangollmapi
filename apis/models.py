@@ -15,7 +15,7 @@ class ApiKey(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return self.key
+        return f"{self.key} - {self.email}"
 
     def save(self, *args, **kwargs):
         if not self.key:
@@ -25,3 +25,21 @@ class ApiKey(models.Model):
     @classmethod
     def generate_key(cls):
         return binascii.hexlify(os.urandom(20)).decode()
+
+
+class APIRequest(models.Model):
+    key = models.ForeignKey(ApiKey, on_delete=models.CASCADE)
+    dt = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=10000)
+    nchars = models.IntegerField()
+    nwords = models.IntegerField()
+    output = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.key} - {self.dt} - {self.nchars} - {self.nwords}"
+
+    def save(self, *args, **kwargs):
+        self.nchars = len(self.text)
+        self.nwords = len(self.text.split())
+        self.text = self.text[:10000]
+        return super().save(*args, **kwargs)

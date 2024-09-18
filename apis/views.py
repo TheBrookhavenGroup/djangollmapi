@@ -1,8 +1,8 @@
 from rest_framework.views import APIView, View
 from rest_framework.response import Response
-from django.http import JsonResponse
 from .permissions import HasAPIKey
 from .tasks import prove_singleton, api_run
+from .models import ApiKey, APIRequest
 
 
 class PermissionTestView(APIView):
@@ -31,8 +31,14 @@ class ApiView(APIView):
         return Response(content)
 
     def post(self, request):
+        key = request.headers['Authorization'].split()[1]
         text = request.data['text']
         result = api_run.delay(text)
         output = result.get()
         output = output['output']
-        return Response({'message': output})
+        r = Response({'message': output})
+
+        k = ApiKey.objects.get(key=key)
+        APIRequest.objects.create(key=k, text=text, output=output)
+
+        return r
