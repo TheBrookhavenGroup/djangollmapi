@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ApiKey
+from .models import ApiKey, APIRequest
 
 
 @admin.register(ApiKey)
@@ -13,3 +13,11 @@ class ApiKeyAdmin(admin.ModelAdmin):
         if not obj.key:
             obj.key = ApiKey.generate_key()
         return super().save_model(request, obj, form, change)
+
+
+@admin.register(APIRequest)
+class APIRequestAdmin(admin.ModelAdmin):
+    list_display = ['key', 'dt', 'nchars', 'nwords', 'output']
+    search_fields = ['key', 'dt', 'nchars', 'nwords']
+    ordering = ['dt', 'nchars', 'nwords']
+    readonly_fields = ['dt', 'nchars', 'nwords', 'output']
