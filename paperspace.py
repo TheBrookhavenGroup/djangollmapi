@@ -11,11 +11,13 @@ machine_id = config['PAPERSPACE']['MACHINE_ID']
 headers = {'Authorization': f'Bearer {API_KEY}',
            'Content-Type': 'application/json'}
 
+
 def check():
     url = 'https://api.paperspace.com/v1/machines'
     response = requests.get(url, headers=headers)
     state = response.json()['items'][0]['state']
     print(state)
+
 
 def stop():
     url = f'https://api.paperspace.com/v1/machines/{machine_id}/stop'
@@ -24,6 +26,7 @@ def stop():
     print(response)
     print(response.content)
 
+
 def start():
     url = f'https://api.paperspace.com/v1/machines/{machine_id}/start'
     payload = {'id': machine_id}
@@ -31,5 +34,6 @@ def start():
     print(response)
     print(response.content)
 
-#stop()
+
+# stop()
 check()

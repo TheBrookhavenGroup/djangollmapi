@@ -14,6 +14,7 @@ class ApiKeyAdmin(admin.ModelAdmin):
             obj.key = ApiKey.generate_key()
         return super().save_model(request, obj, form, change)
 
+
 @admin.register(APIRequest)
 class APIRequestAdmin(admin.ModelAdmin):
     list_display = ['key', 'dt', 'nchars', 'nwords', 'output']
