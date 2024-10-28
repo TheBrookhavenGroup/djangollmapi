@@ -11,7 +11,7 @@ import requests
 
 # Replace URL with the proper domain.
 # url = 'https://<server domain>/api/'
-url = 'http://localhost:8000/api/'
+url = 'http://localhost:8000/analyze/'
 
 key = "<put your key here>"
 
@@ -19,4 +19,8 @@ header = {'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'}
 data = {'text': 'Some very long text that may have been written by AI.'}
 
 response = requests.post(url, headers=header, json=data)
+print(response.content)
+
+url = 'http://localhost:8000/usage/'
+response = requests.get(url, headers=header)
 print(response.content)

@@ -51,29 +51,11 @@ $ git clone https://github.com/TheBrookhavenGroup/djangollmapi.git
 ## Create config file
 
 Create a `~/.djangollmapi` file with the appropriate settings.  It could 
-look like this:
-
-```text
-[DJANGO]
-DEBUG=True
-PROJECT_NAME=Binoculars Live
-SECRET_KEY="django-insecure-dt@hl9)ewrj!wdwrmar$c%&yx(g-*yp*ke*kcpdf8+x&*or1^="
-ADMIN_URL=36126112845a9778035lecf20e06faa087bcb6d2
-DOMAIN=binoculars.live
-
-
-[POSTGRES]
-DB=djangollmapi
-USER=postgres
-PASS=postgres
-
-[LLM]
-MODEL_PACKAGE=binoculars_algo
-MODEL1=EleutherAI/pythia-410m
-MODEL2=EleutherAI/pythia-410m
-```
+look like [example_djangollmapi.config](djangollmapi/example_djangollmapi.config)
 
 You may want to set `DEBUG=False`.
+
+No arguments provided on the url results in a redirect to the `INDEX_URL`.
 
 ## Basic Ubuntu Configuration
 

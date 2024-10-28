@@ -1,4 +1,7 @@
-from rest_framework.views import APIView, View
+from django.http import JsonResponse
+from django.db.models import Sum
+from django.db.models.functions import TruncDay
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import HasAPIKey
 from .tasks import prove_singleton, api_run
@@ -42,3 +45,18 @@ class ApiView(APIView):
         APIRequest.objects.create(key=k, text=text, output=output)
 
         return r
+
+
+class UsageApiView(APIView):
+    permission_classes = (HasAPIKey,)
+
+    def get(self, request):
+        key = request.headers['Authorization'].split()[1]
+        daily_word_count = APIRequest.objects.filter(key__key=key). \
+            annotate(day=TruncDay('dt')). \
+            values('day'). \
+            annotate(total_words=Sum('nwords')). \
+            order_by('day')
+
+        # Convert the queryset to a list of dictionaries and return as JSON
+        return JsonResponse(list(daily_word_count), safe=False)

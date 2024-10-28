@@ -39,7 +39,7 @@ calls, a usage limitation.
 
 ```python
 """
-curl --request POST --url http://localhost:8000/api/ \
+curl --request POST --url http://localhost:8000/analyze/ \
      --header "Authorization: Bearer <put your key here>" \
      --header 'Content-Type: application/json' \
      --data '{"text": "Is this real?"}'
@@ -52,11 +52,39 @@ key = "<put your key here>"
 header = {'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'}
 data = {'text': 'This could be any payload data the api expects.'}
 
-response = requests.post('http://localhost:8000/api/',
+response = requests.post('http://localhost:8000/analyze/',
                          headers=header,
                          json=data)
 print(response.content)
 ```
+
+This code is in [demo_analyze.py](scripts/demo_analyze.py).
+
+## Usage Report API
+
+An API is provided to report on the usage of the API.  It returns the number 
+of words analyzed.
+
+```python
+"""
+curl --request POST --url http://localhost:8000/usage/ \
+     --header "Authorization: Bearer <put your key here>" \
+     --header 'Content-Type: application/json' \
+     --data '{"text": "Is this real?"}'
+
+"""
+
+import requests
+
+key = "<put your key here>"
+header = {'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'}
+
+
+response = requests.get('http://localhost:8000/usage/', headers=header)
+print(response.content)
+```
+
+This code is in [demo_usage.py](scripts/demo_usage.py).
 
 ## Architecture
 
