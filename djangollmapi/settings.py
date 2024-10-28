@@ -15,6 +15,7 @@ config.read(config_file)
 
 ADMIN_URL = config['DJANGO']['ADMIN_URL']
 DOMAIN = config['DJANGO']['DOMAIN']
+INDEX_URL = config['DJANGO']['INDEX_URL']
 PROJECT_NAME = config['DJANGO']['PROJECT_NAME']
 SECRET_KEY = config['DJANGO']['SECRET_KEY']
 ADMIN_URL = config['DJANGO']['ADMIN_URL']
