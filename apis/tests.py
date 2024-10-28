@@ -105,7 +105,7 @@ class TestMulti(ApiBaseTest):
 
 class ApiTest(ApiBaseTest):
     def test_api_post(self):
-        response = self.client.post('/api/',
+        response = self.client.post('/analyze/',
                                     headers=self.header,
                                     data={'text': 'The quick brown fox'})
         self.assertEqual(response.status_code, 200)
