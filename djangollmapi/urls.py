@@ -17,5 +17,5 @@ urlpatterns = [
          name='permission_test'),
     path('singleton/<value>', SingletonView.as_view(), name='singleton'),
     path('analyze/', ApiView.as_view(), name='api'),
-    path('usage/', UsageApiView.as_view(), name='api'),
+    path('usage/', UsageApiView.as_view(), name='usage'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
